@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>AI BET E-GO — Pronostics sportifs générés par IA</title>
+<meta name="description" content="La data au service de vos paris : coupons de pronostics générés avec assistance IA, analyses de matchs, statistiques et programme foot.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><circle cx='32' cy='32' r='28' fill='%230b0d0b' stroke='%232ce458' stroke-width='5'/><path d='M32 20l11 8-4 13H25l-4-13z' fill='%232ce458'/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --bg:#070a08; --bg-2:#0b100c; --card:#0e1510;
+  --line:rgba(255,255,255,.08);
+  --text:#f2f5f2; --muted:#9db0a2;
+  --green:#2ce458; --green-soft:rgba(44,228,88,.12); --green-line:rgba(44,228,88,.35);
+  --red:#ef4444; --yellow:#fbbf24;
+  --paper:#f7f9f7; --ink:#0b0d0b;
+  --radius:22px;
+  --display:"Space Grotesk",sans-serif; --body:"Inter",sans-serif;
+  --wa-link: "https://whatsapp.com/channel/0029VbE4mUzCHDynH0pRA02W";
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{background:var(--bg);color:var(--text);font-family:var(--body);font-size:16px;line-height:1.6;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);
+  background-size:44px 44px;
+  -webkit-mask-image:radial-gradient(ellipse 90% 70% at 50% 0%,#000 40%,transparent 100%);mask-image:radial-gradient(ellipse 90% 70% at 50% 0%,#000 40%,transparent 100%)}
+::selection{background:var(--green);color:#04140a}
+img,svg{display:block}
+a{color:inherit;text-decoration:none}
+section{scroll-margin-top:110px;position:relative;z-index:1}
+.container{width:min(1160px,92%);margin-inline:auto}
+.g{color:var(--green)}
+.icon{width:20px;height:20px;flex:none}
+
+.reveal{opacity:0;transform:translateY(26px);transition:opacity .7s ease var(--d,0s),transform .7s ease var(--d,0s)}
+.reveal.visible{opacity:1;transform:none}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+@keyframes scrollX{to{transform:translateX(-50%)}}
+@keyframes scrollXrev{from{transform:translateX(-50%)}to{transform:translateX(0)}}
+@keyframes galIn{from{opacity:0;transform:scale(.94) translateY(12px)}to{opacity:1;transform:none}}
+
+.nav{position:fixed;top:calc(env(safe-area-inset-top, 0px) + 16px);left:0;right:0;z-index:100;padding:0 4%}
+.nav-inner{max-width:1160px;margin-inline:auto;height:64px;display:flex;align-items:center;justify-content:space-between;gap:16px;
+  padding:0 8px 0 24px;border-radius:999px;border:1px solid var(--line);
+  background:rgba(7,10,8,.35);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  transition:background .35s,border-color .35s,box-shadow .35s}
+.nav.scrolled .nav-inner{background:rgba(7,10,8,.82);border-color:var(--green-line);box-shadow:0 12px 40px rgba(0,0,0,.45)}
+.logo{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:700;font-size:19px;letter-spacing:.04em;white-space:nowrap}
+.logo .brain{width:30px;height:19px;color:var(--green);filter:drop-shadow(0 0 8px rgba(44,228,88,.6))}
+.menu{display:flex;align-items:center;gap:26px}
+.menu a{font-size:14px;font-weight:500;color:var(--muted);transition:.2s;white-space:nowrap}
+.menu a:hover{color:var(--green)}
+.menu .btn{color:#04140a}
+.burger{display:none;background:none;border:0;cursor:pointer;flex-direction:column;gap:5px;padding:10px;margin-right:6px}
+.burger span{width:22px;height:2px;background:var(--text);transition:.3s}
+
+.btn{display:inline-flex;align-items:center;gap:10px;background:var(--green);color:#04140a;font-weight:700;font-size:15px;padding:15px 26px;border-radius:999px;border:0;cursor:pointer;transition:.25s}
+.btn:hover{transform:translateY(-2px);box-shadow:0 14px 34px -10px rgba(44,228,88,.5)}
+.btn.ghost{background:transparent;color:var(--text);border:1px solid var(--line)}
+.btn.ghost:hover{border-color:var(--green-line);box-shadow:none}
+.btn.sm{padding:10px 20px;font-size:14px}
+
+.hero{padding:160px 0 90px}
+.hero::before{content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(640px 320px at 82% 8%,rgba(44,228,88,.14),transparent 65%),radial-gradient(520px 320px at 8% 95%,rgba(44,228,88,.07),transparent 65%)}
+.hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:60px;align-items:center}
+.pill{display:inline-flex;align-items:center;gap:10px;padding:8px 16px;border:1px solid var(--green-line);border-radius:999px;background:var(--green-soft);font-size:12.5px;font-weight:600;letter-spacing:.08em;color:var(--green)}
+.pill i{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 1.6s infinite}
+h1{font-family:var(--display);font-size:clamp(2.5rem,5.4vw,4.3rem);line-height:1.04;letter-spacing:-.02em;margin:24px 0 20px;font-weight:700}
+h1 .accent{color:var(--green);text-shadow:0 0 30px rgba(44,228,88,.4)}
+.hero-sub{color:var(--muted);max-width:520px;font-size:17px}
+.hero-ctas{display:flex;gap:14px;margin:34px 0 44px;flex-wrap:wrap}
+.hero-stats{display:flex;border-top:1px solid var(--line);max-width:540px}
+.hero-stats div{flex:1;padding:18px 18px 0 0}
+.hero-stats div + div{border-left:1px solid var(--line);padding-left:18px}
+.hero-stats b{display:block;font-family:var(--display);font-size:26px}
+.hero-stats span{font-size:12.5px;color:var(--muted)}
+
+.hero-visual{position:relative;display:flex;justify-content:center}
+.mini-ticket{width:min(420px,100%);background:var(--paper);color:var(--ink);border-radius:24px;padding:26px;box-shadow:0 40px 90px rgba(0,0,0,.55);transform:rotate(2deg);transition:.4s}
+.mini-ticket:hover{transform:rotate(0)}
+.mt-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;gap:10px}
+.mt-head b{font-family:var(--display);font-size:17px}
+.mt-tag{background:var(--ink);color:var(--green);font-size:11px;font-weight:700;letter-spacing:.12em;padding:6px 12px;border-radius:999px;display:inline-flex;align-items:center;gap:6px}
+.mt-sub{font-size:10.5px;letter-spacing:.3em;color:#7a877c;text-transform:uppercase;margin-bottom:16px}
+.mt-row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 0;border-top:1.5px dashed #dde4dd;font-size:14px}
+.mt-row .m{font-weight:600}
+.mt-row .p{color:#57645a;font-size:12.5px}
+.mt-row .o{font-family:var(--display);font-weight:700}
+.ok{width:19px;height:19px;flex:none;border-radius:50%;background:var(--green);color:#06321a;display:grid;place-items:center}
+.ok .icon{width:11px;height:11px;stroke-width:3}
+.mt-foot{margin-top:16px;background:var(--ink);border-radius:14px;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;color:#fff}
+.mt-foot span{font-size:11px;letter-spacing:.18em;color:#9aa89d;text-transform:uppercase}
+.mt-foot b{font-family:var(--display);font-size:24px;color:var(--green)}
+.chip{position:absolute;background:var(--card);border:1px solid var(--green-line);border-radius:14px;padding:10px 16px;font-size:13px;font-weight:600;display:flex;gap:8px;align-items:center;box-shadow:0 16px 40px rgba(0,0,0,.5);animation:float 5s ease-in-out infinite;color:var(--text)}
+.chip .icon{color:var(--green)}
+.chip.c1{top:-18px;left:2%}
+.chip.c2{bottom:-14px;right:0;animation-delay:1.4s}
+
+.marquee{overflow:hidden;border-block:1px solid var(--line);background:var(--bg-2);padding:16px 0}
+.track{display:flex;width:max-content;animation:scrollX 26s linear infinite}
+.group{display:flex;gap:44px;padding-right:44px;align-items:center;white-space:nowrap;font-family:var(--display);font-size:13px;letter-spacing:.38em;text-transform:uppercase;color:var(--muted)}
+.group i{color:var(--green);font-style:normal}
+
+.sec{padding:100px 0}
+.kicker{display:inline-flex;align-items:center;gap:12px;color:var(--green);font-size:12px;font-weight:700;letter-spacing:.3em;text-transform:uppercase}
+.kicker::before{content:"";width:28px;height:2px;background:var(--green)}
+h2{font-family:var(--display);font-size:clamp(1.8rem,3.4vw,2.7rem);letter-spacing:-.01em;line-height:1.15;margin:14px 0 12px;font-weight:700}
+.sec-sub{color:var(--muted);max-width:560px}
+
+.feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:52px}
+.feat{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:28px;transition:.3s}
+.feat:hover{transform:translateY(-5px);border-color:var(--green-line)}
+.feat.wide{grid-column:span 2}
+.feat.full{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;
+  background:linear-gradient(var(--card),var(--card)) padding-box,linear-gradient(110deg,var(--green),transparent 60%) border-box;border:1px solid transparent}
+.feat-icon{width:48px;height:48px;border-radius:14px;background:var(--green-soft);border:1px solid var(--green-line);display:grid;place-items:center;margin-bottom:18px;color:var(--green)}
+.feat-icon .icon{width:22px;height:22px}
+.feat h3{font-family:var(--display);font-size:18px;margin-bottom:8px}
+.feat p{color:var(--muted);font-size:14.5px}
+
+.manifesto{min-height:78vh;display:grid;place-items:center;text-align:center;padding:110px 0;
+  background:linear-gradient(rgba(4,8,5,.86),rgba(4,8,5,.94)),url("https://images.unsplash.com/photo-1522778119026-d647f0596c20?q=80&w=2000&auto=format&fit=crop") center/cover no-repeat fixed}
+.mani-kicker{font-size:12px;letter-spacing:.4em;text-transform:uppercase;color:var(--green);font-weight:700}
+.mani-title{font-family:var(--display);font-weight:700;text-transform:uppercase;letter-spacing:.02em;font-size:clamp(2.4rem,7.5vw,6.2rem);line-height:1.02;margin:26px 0 30px}
+.mline{overflow:hidden}
+.mline span{display:block;transform:translateY(112%);transition:transform 1s cubic-bezier(.2,.65,.2,1)}
+.mline:nth-child(2) span{transition-delay:.12s}
+.mline:nth-child(3) span{transition-delay:.24s}
+.visible .mline span{transform:none}
+.mani-title .outline{color:transparent;-webkit-text-stroke:1.5px var(--green)}
+.mani-sub{color:var(--muted);max-width:520px;margin:0 auto}
+.mani-line{width:1px;height:70px;background:linear-gradient(var(--green),transparent);margin:44px auto 0}
+
+.ticket{background:var(--paper);color:var(--ink);border-radius:28px;padding:clamp(24px,4vw,44px);box-shadow:0 50px 120px rgba(0,0,0,.6);margin-top:56px}
+.t-top{display:flex;justify-content:space-between;gap:30px;flex-wrap:wrap;padding-bottom:22px;border-bottom:1.5px dashed #d7ded7}
+.t-brand b{font-family:var(--display);font-size:clamp(22px,3vw,30px);display:block;line-height:1.1}
+.t-brand .tag{font-size:10.5px;letter-spacing:.32em;color:#7a877c;text-transform:uppercase;margin-top:8px;display:block}
+.t-meta{display:grid;grid-template-columns:auto auto;gap:8px 40px;font-size:13.5px;align-content:center}
+.t-meta span{color:#7a877c;letter-spacing:.08em;font-size:11px;text-transform:uppercase}
+.t-valid{display:inline-flex;align-items:center;gap:8px}
+.t-valid .ok{width:18px;height:18px}
+.t-title{margin:26px 0 6px;background:var(--ink);color:#fff;border-radius:14px;padding:15px 22px;font-family:var(--display);font-size:15px;letter-spacing:.06em;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.t-title .icon{color:var(--green)}
+.t-title em{color:var(--green);font-style:normal}
+.table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;min-width:680px}
+th{font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:#8a968c;text-align:left;padding:18px 10px 12px;font-weight:600}
+td{padding:15px 10px;border-top:1.5px dashed #dfe5df;font-size:14.5px;vertical-align:middle}
+.idx{width:27px;height:27px;border-radius:50%;background:var(--green);color:#06321a;font-weight:800;font-size:12.5px;display:grid;place-items:center}
+.team{display:inline-grid;place-items:center;padding:3px 7px;border-radius:6px;background:#e8ede8;font-size:10px;font-weight:800;letter-spacing:.06em;margin-right:4px}
+.match-name{display:block;margin-top:6px;font-weight:600}
+.match-name small{color:#8a968c;font-weight:500}
+td .odd,td .score{font-family:var(--display);font-weight:700}
+tr.more td{color:var(--green);font-weight:700}
+tr.more td a{display:inline-flex;align-items:center;gap:8px}
+.t-stats{display:grid;grid-template-columns:1.2fr 1fr 1.2fr;gap:14px;margin-top:26px}
+.t-stat{background:#eef2ee;border-radius:16px;padding:18px 20px}
+.t-stat span{font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:#7a877c;display:flex;gap:8px;align-items:center}
+.t-stat span .icon{width:15px;height:15px;color:#57645a}
+.t-stat b{font-family:var(--display);font-size:clamp(22px,3vw,32px);display:block;margin-top:6px}
+.t-stat .risk{color:var(--red);display:flex;align-items:center;gap:10px}
+.t-stat .risk .icon{width:22px;height:22px}
+.t-example{margin-top:16px;background:var(--ink);color:#fff;border-radius:16px;padding:18px 24px;display:flex;align-items:center;gap:24px;flex-wrap:wrap;font-size:14px}
+.t-example .icon{color:var(--green)}
+.t-example b{font-family:var(--display);color:var(--green);font-size:18px}
+.t-example .sep{width:1px;height:34px;background:#2a332a}
+.t-example .arrow{color:var(--green)}
+.t-bottom{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;margin-top:26px;flex-wrap:wrap}
+.barcode{height:42px;width:min(300px,100%);background:repeating-linear-gradient(90deg,#101210 0 2px,transparent 2px 5px,#101210 5px 8px,transparent 8px 10px,#101210 10px 11px,transparent 11px 15px)}
+.t-luck{font-family:var(--display);font-style:italic;color:#1db954;font-size:20px;transform:rotate(-3deg)}
+.t-note{margin-top:18px;font-size:12px;color:var(--muted);text-align:center}
+
+.analysis{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:start;margin-top:10px}
+.steps{margin-top:36px}
+.step{display:flex;gap:20px;padding-bottom:34px;position:relative}
+.step::before{content:"";position:absolute;left:21px;top:46px;bottom:0;width:1px;background:var(--line)}
+.step:last-child::before{display:none}
+.step-n{flex:none;width:44px;height:44px;border-radius:50%;border:1px solid var(--green-line);background:var(--green-soft);color:var(--green);font-family:var(--display);font-weight:700;display:grid;place-items:center;font-size:14px}
+.step h3{font-family:var(--display);font-size:17px;margin:8px 0 6px}
+.step p{color:var(--muted);font-size:14.5px;max-width:400px}
+.a-card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:30px;position:sticky;top:110px}
+.a-head{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-bottom:24px;flex-wrap:wrap}
+.a-head b{font-family:var(--display);font-size:17px;display:flex;align-items:center;gap:10px}
+.a-head b .icon{color:var(--green)}
+.a-score{background:var(--green-soft);border:1px solid var(--green-line);color:var(--green);border-radius:999px;padding:6px 14px;font-size:13px;font-weight:700}
+.a-block{padding:18px 0;border-top:1px solid var(--line)}
+.a-block > span{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:14px}
+.form{display:flex;gap:8px;flex-wrap:wrap}
+.fb{width:32px;height:32px;border-radius:9px;display:grid;place-items:center;font-size:12px;font-weight:800;font-style:normal}
+.fb.w{background:var(--green);color:#06321a}
+.fb.d{background:#242d25;color:var(--muted)}
+.fb.l{background:rgba(239,68,68,.15);color:var(--red);border:1px solid rgba(239,68,68,.3)}
+.form-line{display:flex;align-items:center;gap:12px;margin-bottom:10px;font-size:12.5px;color:var(--muted)}
+.form-line .lbl{width:86px;flex:none}
+.bar{flex:1;height:8px;border-radius:99px;background:#1b231c;overflow:hidden}
+.bar i{display:block;height:100%;width:0;border-radius:99px;background:var(--green);transition:width 1.1s .25s ease}
+.visible .bar i{width:var(--w)}
+.bar i.red{background:var(--red)}
+.bar-lbl{width:44px;text-align:right;font-family:var(--display);font-weight:700;color:var(--text)}
+
+.band{border-block:1px solid var(--line);background:var(--bg-2);padding:56px 0}
+.band-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;text-align:center}
+.band-grid div + div{border-left:1px solid var(--line)}
+.band b{font-family:var(--display);font-size:clamp(2rem,4.5vw,3.4rem);color:var(--green);display:block;line-height:1}
+.band span{font-size:13px;color:var(--muted);display:block;margin-top:10px}
+
+.wins-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:60px}
+.win{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:26px;position:relative;transition:.35s}
+.win:nth-child(1){transform:rotate(-2deg)}
+.win:nth-child(2){transform:rotate(1.5deg) translateY(14px)}
+.win:nth-child(3){transform:rotate(-1deg)}
+.win:hover{transform:rotate(0) translateY(-6px);border-color:var(--green-line)}
+.win-top{display:flex;justify-content:space-between;align-items:center;font-size:12.5px;color:var(--muted);margin-bottom:18px}
+.win-badge{background:var(--green);color:#06321a;font-weight:800;font-size:11px;letter-spacing:.14em;padding:6px 12px;border-radius:999px;display:inline-flex;gap:6px;align-items:center}
+.win-odd{font-family:var(--display);font-size:44px;color:var(--text);line-height:1}
+.win-odd small{font-size:20px;color:var(--green)}
+.win-meta{margin-top:14px;font-size:13px;color:var(--muted);display:flex;gap:8px;align-items:center}
+.win-meta .icon{width:15px;height:15px;color:var(--green)}
+.win-stamp{position:absolute;top:14px;right:14px;width:64px;height:64px;border:2px solid var(--green);border-radius:50%;color:var(--green);display:grid;place-items:center;font-size:9px;font-weight:800;letter-spacing:.14em;transform:rotate(12deg);opacity:.85;text-transform:uppercase}
+
+.gal-head{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap}
+.gal-count{display:inline-flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:10px 18px;font-size:13px;color:var(--muted)}
+.gal-count b{color:var(--green)}
+.filters{display:flex;gap:10px;flex-wrap:wrap;margin-top:44px}
+.filter-btn{background:var(--card);border:1px solid var(--line);color:var(--muted);border-radius:999px;padding:10px 20px;font-size:13px;font-weight:600;cursor:pointer;transition:.25s;font-family:var(--body)}
+.filter-btn:hover{border-color:var(--green-line);color:var(--text)}
+.filter-btn.active{background:var(--green);border-color:var(--green);color:#04140a}
+.gal-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:26px}
+.gal-card{background:var(--paper);color:var(--ink);border-radius:18px;padding:20px;position:relative;transition:.3s}
+.gal-card:hover{transform:translateY(-6px);box-shadow:0 24px 60px rgba(0,0,0,.45)}
+.gal-card.hide{display:none}
+.gal-card.show{animation:galIn .45s ease both}
+.gal-top{display:flex;justify-content:space-between;font-size:12px;color:#7a877c;margin-bottom:16px}
+.gal-top b{color:var(--ink);font-family:var(--display)}
+.gal-odd{font-family:var(--display);font-size:34px;font-weight:700;line-height:1}
+.gal-type{display:inline-block;margin-top:12px;font-size:10px;font-weight:800;letter-spacing:.14em;padding:5px 11px;border-radius:999px}
+.gal-type.high{background:var(--ink);color:var(--green)}
+.gal-type.safe{background:#e2e8e2;color:#57645a}
+.gal-type.lab{background:transparent;border:1.5px dashed #9aa89d;color:#57645a}
+.gal-sel{margin-top:14px;font-size:12.5px;color:#7a877c;border-top:1.5px dashed #dfe5df;padding-top:10px}
+.gal-stamp{position:absolute;top:44px;right:14px;transform:rotate(8deg);font-size:10px;font-weight:800;letter-spacing:.16em;padding:5px 12px;border-radius:6px;border:2px solid}
+.gal-stamp.win{color:#12a03c;border-color:#12a03c;background:rgba(18,160,60,.08)}
+.gal-stamp.loss{color:var(--red);border-color:var(--red);background:rgba(239,68,68,.08)}
+.gal-stamp.run{color:#b7791f;border-color:#d69e2e;background:rgba(214,158,46,.12)}
+.gal-bar{margin-top:14px;height:26px;background:repeating-linear-gradient(90deg,#101210 0 2px,transparent 2px 4px,#101210 4px 7px,transparent 7px 9px)}
+
+.types-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:52px}
+.type{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:30px;display:flex;flex-direction:column;gap:14px;transition:.3s}
+.type:hover{transform:translateY(-5px);border-color:var(--green-line)}
+.type.hot{border-color:var(--green-line);background:linear-gradient(160deg,rgba(44,228,88,.09),var(--card) 55%)}
+.type .emo{width:48px;height:48px;border-radius:14px;background:var(--green-soft);border:1px solid var(--green-line);display:grid;place-items:center;color:var(--green)}
+.type h3{font-family:var(--display);font-size:19px}
+.type p{color:var(--muted);font-size:14.5px;flex:1}
+.type .odds{font-size:12.5px;color:var(--muted)}
+.type .odds b{color:var(--text)}
+.risk-meter{display:flex;align-items:center;gap:6px}
+.risk-meter i{width:9px;height:9px;border-radius:50%;background:#242d25}
+.risk-meter i.on{background:var(--green)}
+.risk-meter i.on.red{background:var(--red)}
+.risk-meter span{margin-left:8px;font-size:12px;color:var(--muted)}
+
+.rev-rows{margin-top:56px;display:flex;flex-direction:column;gap:18px}
+.rev-row{overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
+.rev-row .track{animation:scrollX 46s linear infinite;gap:18px}
+.rev-row.rev .track{animation:scrollXrev 52s linear infinite}
+.rev-row:hover .track{animation-play-state:paused}
+.rev-card{width:370px;flex:none;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:24px;transition:.3s}
+.rev-card:hover{border-color:rgba(251,191,36,.4)}
+.stars{display:flex;gap:4px;margin-bottom:14px}
+.stars .icon{width:15px;height:15px;color:var(--yellow);filter:drop-shadow(0 0 5px rgba(251,191,36,.35))}
+.stars .icon.off{color:#2a332a;filter:none}
+.rev-card p{font-size:14.5px;color:var(--text)}
+.rev-who{display:flex;align-items:center;gap:12px;margin-top:18px}
+.rev-ava{width:38px;height:38px;border-radius:50%;background:var(--green-soft);border:1px solid var(--green-line);color:var(--green);font-weight:800;font-size:13px;display:grid;place-items:center}
+.rev-who b{font-size:14px;display:block;line-height:1.2}
+.rev-who span{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+.rev-who span .icon{width:12px;height:12px;color:var(--green);stroke-width:3}
+
+.prog{margin-top:52px;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:var(--card)}
+.prog-row{display:flex;align-items:center;gap:22px;padding:20px 26px;border-top:1px solid var(--line);transition:.25s;flex-wrap:wrap}
+.prog-row:first-child{border-top:0}
+.prog-row:hover{background:rgba(44,228,88,.05)}
+.date{flex:none;width:74px;text-align:center;border:1px solid var(--line);border-radius:14px;padding:9px 0;background:var(--bg-2)}
+.date b{font-family:var(--display);display:block;font-size:15px}
+.date span{font-size:11px;color:var(--green);font-weight:700;letter-spacing:.08em}
+.prog-match{flex:1;min-width:200px}
+.prog-match b{font-size:15.5px}
+.prog-match span{display:block;font-size:12.5px;color:var(--muted)}
+.badge{font-size:11.5px;font-weight:700;letter-spacing:.08em;padding:7px 14px;border-radius:999px}
+.badge.in{background:var(--green-soft);color:var(--green);border:1px solid var(--green-line)}
+.badge.soon{background:transparent;color:var(--muted);border:1px solid var(--line)}
+
+.faq{max-width:780px;margin:52px auto 0}
+.faq details{border:1px solid var(--line);border-radius:16px;margin-bottom:12px;background:var(--card);overflow:hidden;transition:.3s}
+.faq details[open]{border-color:var(--green-line)}
+.faq summary{cursor:pointer;padding:20px 24px;display:flex;justify-content:space-between;align-items:center;gap:16px;font-weight:600;font-size:15.5px;list-style:none}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary .plus{width:30px;height:30px;flex:none;border:1px solid var(--line);border-radius:50%;display:grid;place-items:center;color:var(--green);transition:.3s}
+.faq summary .plus .icon{width:14px;height:14px}
+.faq details[open] .plus{transform:rotate(45deg);border-color:var(--green-line)}
+.faq .ans{padding:0 24px 22px;color:var(--muted);font-size:14.5px;max-width:640px}
+
+.cta-card{border-radius:30px;padding:clamp(40px,6vw,80px);text-align:center;position:relative;overflow:hidden;
+  background:linear-gradient(var(--card),var(--card)) padding-box,linear-gradient(120deg,var(--green),transparent 45%,var(--green)) border-box;border:1px solid transparent}
+.cta-card::before{content:"";position:absolute;inset:0;background:radial-gradient(500px 240px at 50% 0%,rgba(44,228,88,.16),transparent 70%)}
+.cta-card > *{position:relative}
+.cta-card h2{font-size:clamp(2rem,4.6vw,3.4rem)}
+.cta-card p{color:var(--muted);max-width:480px;margin:0 auto 34px}
+.cta-wa .icon{width:22px;height:22px}
+.cta-note{margin-top:20px;font-size:12.5px;color:var(--muted);letter-spacing:.06em}
+
+footer{position:relative;border-top:1px solid var(--line);background:var(--bg-2);overflow:hidden;margin-top:80px;z-index:1}
+.f-top{display:grid;grid-template-columns:1fr 1.6fr;gap:60px;padding:76px 0 54px}
+.f-brand p{color:var(--muted);font-size:14.5px;max-width:300px;margin-top:16px}
+.f-tag{font-family:var(--display);color:var(--green);font-size:14px;margin-top:12px}
+.f-social{display:flex;gap:10px;margin-top:26px}
+.f-social a{width:42px;height:42px;border:1px solid var(--line);border-radius:12px;display:grid;place-items:center;color:var(--muted);transition:.25s}
+.f-social a:hover{color:#04140a;background:var(--green);border-color:var(--green);transform:translateY(-3px)}
+.f-cols{display:grid;grid-template-columns:1fr 1fr 1.5fr;gap:40px}
+.f-col h4{font-family:var(--display);font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:var(--muted);margin-bottom:20px}
+.f-col a{display:block;color:var(--muted);font-size:14px;margin-bottom:12px;transition:.2s;width:fit-content}
+.f-col a:hover{color:var(--green);transform:translateX(4px)}
+.f-news p{color:var(--muted);font-size:13.5px}
+.f-news form{display:flex;gap:8px;margin-top:16px}
+.f-news input{flex:1;min-width:0;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:12px 18px;color:var(--text);font-family:var(--body);font-size:14px;outline:none;transition:.2s}
+.f-news input::placeholder{color:#5c6b5f}
+.f-news input:focus{border-color:var(--green-line)}
+.f-ok{display:flex;align-items:center;gap:8px;color:var(--green);font-size:13.5px;font-weight:600;margin-top:16px}
+.f-gamble{border:1px solid var(--line);background:var(--card);border-radius:16px;padding:16px 22px;font-size:12px;color:var(--muted);display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.f-gamble .age{border:1px solid var(--red);color:var(--red);border-radius:6px;padding:2px 8px;font-weight:800;flex:none}
+.f-bottom{display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;padding:26px 0 34px;margin-top:26px;border-top:1px solid var(--line);font-size:12.5px;color:var(--muted)}
+.f-bottom nav{display:flex;gap:22px}
+.f-bottom nav a:hover{color:var(--green)}
+.f-giant{font-family:var(--display);font-weight:700;font-size:clamp(2.6rem,13.5vw,11.5rem);line-height:.85;letter-spacing:.06em;text-align:center;color:transparent;-webkit-text-stroke:1px rgba(44,228,88,.16);user-select:none;pointer-events:none;transform:translateY(14%);white-space:nowrap}
+
+@media(max-width:1024px){
+  .burger{display:flex}
+  .menu{position:fixed;top:calc(env(safe-area-inset-top, 0px) + 92px);left:4%;right:4%;
+    flex-direction:column;align-items:stretch;gap:4px;
+    background:rgba(7,10,8,.94);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+    border:1px solid var(--line);border-radius:20px;padding:14px;
+    transform:translateY(-16px);opacity:0;pointer-events:none;transition:.35s;z-index:99;
+    box-shadow:0 30px 60px rgba(0,0,0,.5)}
+  .menu.open{transform:none;opacity:1;pointer-events:auto}
+  .menu a{padding:13px 16px;border-radius:12px;font-size:15px}
+  .menu a:hover{background:var(--green-soft)}
+  .menu .btn{justify-content:center;margin-top:8px}
+}
+@media(max-width:1000px){
+  .hero-grid,.analysis,.f-top{grid-template-columns:1fr}
+  .hero{padding-top:140px}
+  .a-card{position:static}
+  .feat-grid{grid-template-columns:1fr 1fr}
+  .types-grid,.wins-grid{grid-template-columns:1fr}
+  .win:nth-child(2){transform:rotate(1.5deg)}
+  .t-stats{grid-template-columns:1fr}
+  .gal-grid{grid-template-columns:1fr 1fr}
+  .band-grid{grid-template-columns:1fr 1fr;gap:34px}
+  .band-grid div + div{border-left:0}
+  .band-grid div:nth-child(even){border-left:1px solid var(--line)}
+  .f-cols{grid-template-columns:1fr 1fr}
+  .f-news{grid-column:1/-1}
+  .manifesto{background-attachment:scroll}
+}
+@media(max-width:760px){
+  .burger.active span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+  .burger.active span:nth-child(2){opacity:0}
+  .burger.active span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+  .rev-card{width:300px}
+  .sec{padding:80px 0}
+}
+@media(max-width:640px){
+  .feat-grid{grid-template-columns:1fr}
+  .feat.wide,.feat.full{grid-column:auto}
+  .hero-stats{flex-direction:column}
+  .hero-stats div + div{border-left:0;padding-left:0}
+  .band-grid{grid-template-columns:1fr}
+  .band-grid div:nth-child(even){border-left:0}
+  .gal-grid{grid-template-columns:1fr}
+  .f-cols{grid-template-columns:1fr}
+}
+@media(max-width:520px){
+  .t-meta{grid-template-columns:1fr}
+  .t-example .sep{display:none}
+  .logo{font-size:17px}
+  .logo .brain{width:26px;height:17px}
+  .nav-inner{padding-left:18px}
+}
+@media(max-width:480px){
+  .hero-ctas .btn{width:100%;justify-content:center}
+  .chip{font-size:12px;padding:8px 12px}
+  .f-giant{letter-spacing:.02em}
+}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-brain" viewBox="0 0 64 40">
+    <path fill="currentColor" d="M30 5c-2-3-8-3-10 0-4-1-8 2-8 6-4 1-6 6-4 9-2 3-1 8 3 9 0 4 4 7 8 6 2 3 7 3 9 1 1 0 2-1 2-2V7c0-1 0-2 0-2z"/>
+    <path fill="currentColor" d="M34 5c2-3 8-3 10 0 4-1 8 2 8 6 4 1 6 6 4 9 2 3 1 8-3 9 0 4-4 7-8 6-2 3-7 3-9 1-1 0-2-1-2-2V7z"/>
+  </symbol>
+  <symbol id="i-target" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></g></symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></g></symbol>
+  <symbol id="i-ball" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 7.5l4.3 3.1-1.6 5H9.3l-1.6-5z"/><path d="M12 7.5V2.5"/><path d="M16.3 10.6l4.6-1.5"/><path d="M14.7 15.6l2.8 4"/><path d="M9.3 15.6l-2.8 4"/><path d="M7.7 10.6L3.1 9.1"/></g></symbol>
+  <symbol id="i-trend" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></g></symbol>
+  <symbol id="i-flame" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M8.5 14.5A2.5 2.5 0 0 0 12.5 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7.5 7.5 0 1 1-15 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></symbol>
+  <symbol id="i-flask" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 3h15"/><path d="M6 3v16a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V3"/><path d="M6 14h12"/></g></symbol>
+  <symbol id="i-cal" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/></g></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></symbol>
+  <symbol id="i-bolt" viewBox="0 0 24 24"><polygon fill="currentColor" points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24"><polygon fill="currentColor" points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><polyline fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" points="20 6 9 17 4 12"/></symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></g></symbol>
+  <symbol id="i-trophy" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></g></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></g></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></g></symbol>
+  <symbol id="i-calc" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 7h6"/><path d="M9 12h.01"/><path d="M12 12h.01"/><path d="M15 12h.01"/><path d="M9 16h.01"/><path d="M12 16h.01"/><path d="M15 16h.01"/></g></symbol>
+  <symbol id="i-layers" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 2 7.5l10 5.5 10-5.5z"/><path d="m2 12.5 10 5.5 10-5.5"/><path d="m2 17.5 10 5.5 10-5.5"/></g></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14"/><path d="M5 12h14"/></g></symbol>
+  <symbol id="i-wa" viewBox="0 0 24 24">
+    <path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5.1-1.3A10 10 0 1 0 12 2z"/>
+    <path fill="#fff" d="M9.2 7.4c-.5 3.2 3.1 7.3 6.6 7.9l1.2-2-2.3-1.3-1 .9c-1.2-.4-2.7-1.9-3.1-3.1l.9-1-1.2-2.3z"/>
+  </symbol>
+  <symbol id="i-send" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-11 11"/><path d="M22 2 15 22l-4-9-9-4z"/></g></symbol>
+  <symbol id="i-insta" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><path d="M17.5 6.5h.01"/></g></symbol>
+  <symbol id="i-yt" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 17a24.12 24.12 0 0 1 0-10 2 2 0 0 1 1.4-1.4 49.56 49.56 0 0 1 16.2 0A2 2 0 0 1 21.5 7a24.12 24.12 0 0 1 0 10 2 2 0 0 1-1.4 1.4 49.55 49.55 0 0 1-16.2 0A2 2 0 0 1 2.5 17"/><path d="m10 15 5-3-5-3z"/></g></symbol>
+</svg>
+
+<header class="nav" id="nav">
+  <div class="nav-inner">
+    <a href="#" class="logo"><svg class="brain"><use href="#i-brain"/></svg>AI&nbsp;B<span class="g">E</span>T&nbsp;<span>E-GO</span></a>
+    <nav class="menu" id="menu">
+      <a href="#fonctionnalites">Fonctionnalités</a>
+      <a href="#coupon">Coupon du jour</a>
+      <a href="#galerie">Galerie</a>
+      <a href="#avis">Avis</a>
+      <a href="#programme">Programme</a>
+      <a href="https://whatsapp.com/channel/0029VbE4mUzCHDynH0pRA02W" target="_blank" rel="noopener" class="btn sm"><svg class="icon" style="width:15px;height:15px"><use href="#i-wa"/></svg>Rejoindre WhatsApp</a>
+    </nav>
+    <button class="burger" id="burger" aria-label="Menu" aria-expanded="false" aria-controls="menu"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<main>
+<section class="hero">
+  <div class="container hero-grid">
+    <div>
+      <span class="pill reveal"><i></i><svg class="icon" style="width:16px;height:16px"><use href="#i-brain"/></svg>Intelligence artificielle sportive</span>
+      <h1 class="reveal" style="--d:.08s">Des pronostics <span class="accent">intelligents</span> pour gagner plus.</h1>
+      <p class="hero-sub reveal" style="--d:.16s">AI BET E-GO met la data au service de vos paris : forme récente, confrontations directes, buts… Notre IA analyse chaque match et génère des coupons simples et combinés, chaque jour.</p>
+      <div class="hero-ctas reveal" style="--d:.24s">
+        <a href="https://whatsapp.com/channel/0029VbE4mUzCHDynH0pRA02W" target="_blank" rel="noopener" class="btn"><svg class="icon"><use href="#i-wa"/></svg>Rejoindre la chaîne WhatsApp</a>
+        <a href="#coupon" class="btn ghost">Voir le coupon du jour<svg class="icon" style="width:16px;height:16px"><use href="#i-arrow"/></svg></a>
+      </div>
+      <div class="hero-stats reveal" style="--d:.32s">
+        <div><b class="g">~548x</b><span>cote combinée record</span></div>
+        <div><b>12</b><span>sélections / coupon</span></div>
+        <div><b>100%</b><span>foot & data</span></div>
+      </div>
+    </div>
+
+    <div class="hero-visual reveal" style="--d:.2s">
+      <div class="chip c1"><svg class="icon" style="width:18px;height:12px"><use href="#i-brain"/></svg>Score IA : <b class="g">88/100</b></div>
+      <div class="chip c2"><svg class="icon" style="width:14px;height:14px"><use href="#i-bolt"/></svg>HIGH ODDS</div>
+      <div class="mini-ticket">
+        <div class="mt-head"><b>COUPON AI — BET TICKET</b><span class="mt-tag"><svg class="icon" style="width:11px;height:11px"><use href="#i-bolt"/></svg>HIGH ODDS</span></div>
+        <div class="mt-sub">Analyse • Pronostics • Gain</div>
+        <div class="mt-row"><div><div class="m">Argentina vs Bolivia</div><div class="p">AH — Argentina -3.5</div></div><span class="o">~2.05</span><span class="ok"><svg class="icon"><use href="#i-check"/></svg></span></div>
+        <div class="mt-row"><div><div class="m">USA vs Chile</div><div class="p">BTTS — Les deux marquent</div></div><span class="o">~1.88</span><span class="ok"><svg class="icon"><use href="#i-check"/></svg></span></div>
+        <div class="mt-row"><div><div class="m">Portugal U21 vs Gibraltar U21</div><div class="p">Total — Over 5.5 buts</div></div><span class="o">~1.70</span><span class="ok"><svg class="icon"><use href="#i-check"/></svg></span></div>
+        <div class="mt-foot"><span>Cote combinée record</span><b>~548x</b></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="marquee" aria-hidden="true">
+  <div class="track">
+    <div class="group">ANALYSE <i>✦</i> PRONOSTICS <i>✦</i> GAIN <i>✦</i> FOOT <i>✦</i> IA <i>✦</i> PERFORMANCE <i>✦</i></div>
+    <div class="group">ANALYSE <i>✦</i> PRONOSTICS <i>✦</i> GAIN <i>✦</i> FOOT <i>✦</i> IA <i>✦</i> PERFORMANCE <i>✦</i></div>
+  </div>
+</div>
+
+<section class="sec" id="fonctionnalites">
+  <div class="container">
+    <div class="reveal">
+      <span class="kicker">Fonctionnalités</span>
+      <h2>Une stratégie complète,<br>pilotée par la data.</h2>
+      <p class="sec-sub">Sept piliers pour parier plus intelligemment, du coupon sécurisé au laboratoire expérimental.</p>
+    </div>
+    <div class="feat-grid">
+      <article class="feat wide reveal"><div class="feat-icon"><svg class="icon"><use href="#i-target"/></svg></div><h3>Coupons générés avec assistance IA</h3><p>Chaque sélection passe au crible de milliers de données avant d'être publiée. Le coupon est construit, coté et validé par notre modèle — jusqu'à 12 sélections et des cotes combinées record de 548x.</p></article>
+      <article class="feat reveal" style="--d:.08s"><div class="feat-icon"><svg class="icon"><use href="#i-chart"/></svg></div><h3>Analyse des matchs</h3><p>Probabilités, value bets, contexte : l'IA décortique chaque rencontre ligne par ligne.</p></article>
+      <article class="feat reveal"><div class="feat-icon"><svg class="icon"><use href="#i-ball"/></svg></div><h3>Sélections simples & combinées</h3><p>Du pari sécurisé au combo ambitieux : choisissez votre style, l'IA fait le reste.</p></article>
+      <article class="feat reveal" style="--d:.08s"><div class="feat-icon"><svg class="icon"><use href="#i-trend"/></svg></div><h3>Statistiques avancées</h3><p>Forme récente, H2H, buts marqués/encaissés, classement : tout est pris en compte.</p></article>
+      <article class="feat reveal" style="--d:.16s"><div class="feat-icon"><svg class="icon"><use href="#i-flame"/></svg></div><h3>Coupons du jour</h3><p>Le meilleur des matchs du jour, publié chaque matin sur la chaîne WhatsApp.</p></article>
+      <article class="feat wide reveal"><div class="feat-icon"><svg class="icon"><use href="#i-flask"/></svg></div><h3>Coupons « expérimentation IA »</h3><p>Le labo de l'IA : nouveaux marchés, nouveaux modèles. Des coupons de test pour repousser les limites de la prédiction.</p></article>
+      <article class="feat reveal" style="--d:.08s"><div class="feat-icon"><svg class="icon"><use href="#i-cal"/></svg></div><h3>Programme des matchs</h3><p>Le calendrier des prochaines analyses pour ne jamais rater une opportunité.</p></article>
+      <article class="feat full reveal"><div><h3>Prêt à parier plus intelligemment ?</h3><p>Rejoins la chaîne et reçois chaque coupon en temps réel.</p></div><a href="https://whatsapp.com/channel/0029VbE4mUzCHDynH0pRA02W" target="_blank" rel="noopener" class="btn">Rejoindre maintenant<svg class="icon" style="width:16px;height:16px"><use href="#i-arrow"/></svg></a></article>
+    </div>
+  </div>
+</section>
+
+<section class="manifesto reveal-lines">
+  <div class="container">
+    <span class="mani-kicker">AI BET E-GO</span>
+    <h2 class="mani-title">
+      <span class="mline"><span>La data</span></span>
+      <span class="mline"><span class="outline">au service</span></span>
+      <span class="mline"><span>de vos paris.</span></span>
+    </h2>
+    <p class="mani-sub">Chaque coupon est le résultat de milliers de calculs. Pas d'intuition. Pas de hasard. Uniquement des probabilités, des statistiques et une stratégie.</p>
+    <div class="mani-line"></div>
+  </div>
+</section>
+
+<section class="sec" id="coupon">
+  <div class="container">
+    <div class="reveal">
+      <span class="kicker">Coupon du jour</span>
+      <h2>Récapitulatif du coupon <span class="g">HIGH ODDS</span></h2>
+      <p class="sec-sub">Extrait du coupon record généré par l'IA — n° AI-4587-E-GO. 12 sélections, cote combinée ~548x.</p>
+    </div>
+
+    <div class="ticket reveal">
+      <div class="t-top">
+        <div class="t-brand"><b>COUPON AI</b><b class="g">BET TICKET</b><span class="tag">La data au service de vos paris</span></div>
+        <div class="t-meta">
+          <div><span>N° coupon</span><br><b>AI-4587-<span class="g">E-GO</span></b></div>
+          <div><span>Type</span><br><b style="display:inline-flex;align-items:center;gap:6px">HIGH ODDS <svg class="icon" style="width:12px;height:12px;color:#1db954"><use href="#i-bolt"/></svg></b></div>
+          <div><span>Date</span><br><b>30 sept. 2026 — 10:24</b></div>
+          <div><span>Statut</span><br><b class="t-valid">VALIDÉ <span class="ok"><svg class="icon"><use href="#i-check"/></svg></span></b></div>
+        </div>
+      </div>
+
+      <div class="t-title"><svg class="icon"><use href="#i-ball"/></svg>RÉCAPITULATIF DU COUPON <em>HIGH ODDS</em></div>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>#</th><th>Match</th><th>Marché</th><th>Pronostic</th><th>Cote est.</th><th>Score IA</th></tr></thead>
+          <tbody>
+            <tr><td><span class="idx">1</span></td><td><span class="team">ARG</span><span class="team">BOL</span><span class="match-name">Argentina <small>vs</small> Bolivia</span></td><td>AH</td><td>Argentina -3.5</td><td class="odd">~2.05</td><td><span class="score">85</span> <span class="ok"><svg class="icon"><use href="#i-check"/></svg></span></td></tr>
+            <tr><td><span class="idx">2</span></td><td><span class="team">USA</span><span class="team">CHI</span><span class="match-name">USA <small>vs</small> Chile</span></td><td>BTTS</td><td>Les deux marquent</td><td class="odd">~1.88</td><td><span class="score">74</span> <span class="ok"><svg class="icon"><use href="#i-check"/></svg></span></td></tr>
+            <tr><td><span class="idx">3</span></td><td><span class="team">MEX</span><span class="team">PER</span><span class="match-name">Mexico <small>vs</small> Peru</span></td><td>AH</td><td>Mexico -1</td><td class="odd">~1.80</td><td><span class="score">78</span> <span class="ok"><svg class="icon"><use href="#i-check"/></svg></span></td></tr>
+            <tr><td><span class="idx">4</span></td><td><span class="team">NYR</span><span class="team">STL</span><span class="match-name">NYRB <small>vs</small> St. Louis City</span></td><td>1X2</td><td>St. Louis City gagne</td><td class="odd">~2.30</td><td><span class="score">75</span> <span class="ok"><svg class="icon"><use href="#i-check"/></svg></span></td></tr>
+            <tr><td><span class="idx">5</span></td><td><span class="team">NAC</span><span class="team">JUN</span><span class="match-name">Nacional <small>vs</small> Junior FC</span></td><td>1X2</td><td>Nacional gagne</td><td class="odd">~1.90</td><td><span class="score">73</span> <span class="ok"><svg class="icon"><use href="#i-check"/></svg></span></td></tr>
+            <tr><td><span class="idx">6</span></td><td><span class="team">POR</span><span class="team">GIB</span><span class="match-name">Portugal U21 <small>vs</small> Gibraltar U21</span></td><td>Total</td><td>Over 5.5 buts</td><td class="odd">~1.70</td><td><span class="score">88</span> <span class="ok"><svg class="icon"><use href="#i-check"/></svg></span></td></tr>
+            <tr class="more"><td colspan="6"><a href="https://whatsapp.com/channel/0029VbE4mUzCHDynH0pRA02W" target="_blank" rel="noopener">+ 6 autres sélections analysées — coupon complet (12) sur la chaîne WhatsApp <svg class="icon" style="width:15px;height:15px"><use href="#i-arrow"/></svg></a></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="t-stats">
+        <div class="t-stat"><span><svg class="icon"><use href="#i-calc"/></svg>Cote combinée estimée</span><b class="g">~548x</b></div>
+        <div class="t-stat"><span><svg class="icon"><use href="#i-layers"/></svg>Nombre de sélections</span><b>12</b></div>
+        <div class="t-stat"><span><svg class="icon"><use href="#i-alert"/></svg>Niveau de risque</span><b class="risk"><svg class="icon"><use href="#i-alert"/></svg>ÉLEVÉ</b></div>
+      </div>
+
+      <div class="t-example">
+        <svg class="icon"><use href="#i-target"/></svg>
+        <span><b>1 000</b> mise</span><span class="arrow"><svg class="icon" style="width:16px;height:16px"><use href="#i-arrow"/></svg></span><span><b>~548 000</b> gain potentiel</span>
+        <span class="sep"></span>
+        <span><b>500</b> mise</span><span class="arrow"><svg class="icon" style="width:16px;height:16px"><use href="#i-arrow"/></svg></span><span><b>~274 000</b> gain potentiel</span>
+      </div>
+
+      <div class="t-bottom">
+        <div class="barcode" aria-hidden="true"></div>
+        <span class="t-luck">Bonne chance !</span>
+      </div>
+      <p class="t-note">Coupon présenté à titre d'exemple. Cotes estimatives, non contractuelles.</p>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="analyse">
+  <div class="container">
+    <div class="reveal">
+      <span class="kicker">Analyse IA</span>
+      <h2>Ce que l'IA regarde<br>avant de choisir.</h2>
+    </div>
+    <div class="analysis">
+      <div>
+        <div class="steps">
+          <div class="step reveal"><span class="step-n">01</span><div><h3>Collecte de données</h3><p>Forme récente, H2H, effectifs, enjeux, domicile/extérieur, météo… des milliers de points de données par match.</p></div></div>
+          <div class="step reveal" style="--d:.08s"><span class="step-n">02</span><div><h3>Modélisation</h3><p>Le modèle calcule les probabilités réelles et détecte les paris à valeur (value bets).</p></div></div>
+          <div class="step reveal" style="--d:.16s"><span class="step-n">03</span><div><h3>Sélection des marchés</h3><p>1X2, handicaps asiatiques, BTTS, totaux de buts : seuls les meilleurs marchés entrent dans le coupon.</p></div></div>
+          <div class="step reveal" style="--d:.24s"><span class="step-n">04</span><div><h3>Validation & partage</h3><p>Le coupon est validé avec son score de confiance, puis partagé instantanément sur WhatsApp.</p></div></div>
+        </div>
+      </div>
+      <div class="a-card reveal">
+        <div class="a-head"><b><svg class="icon"><use href="#i-search"/></svg>Exemple : Argentina vs Bolivia</b><span class="a-score">Score IA 85/100</span></div>
+        <div class="a-block" style="border-top:0">
+          <span>Forme récente (5 derniers)</span>
+          <div class="form-line"><span class="lbl">Argentina</span><div class="form"><i class="fb w">V</i><i class="fb w">V</i><i class="fb d">N</i><i class="fb w">V</i><i class="fb w">V</i></div></div>
+          <div class="form-line"><span class="lbl">Bolivia</span><div class="form"><i class="fb l">D</i><i class="fb d">N</i><i class="fb l">D</i><i class="fb l">D</i><i class="fb d">N</i></div></div>
+        </div>
+        <div class="a-block">
+          <span>Confrontations directes (H2H)</span>
+          <div class="form-line"><span class="lbl">Argentina</span><div class="bar"><i style="--w:68%"></i></div><span class="bar-lbl">68%</span></div>
+          <div class="form-line"><span class="lbl">Nul</span><div class="bar"><i style="--w:19%"></i></div><span class="bar-lbl">19%</span></div>
+          <div class="form-line"><span class="lbl">Bolivia</span><div class="bar"><i style="--w:13%"></i></div><span class="bar-lbl">13%</span></div>
+        </div>
+        <div class="a-block">
+          <span>Buts attendus (xG)</span>
+          <div class="form-line"><span class="lbl">Argentina</span><div class="bar"><i style="--w:86%"></i></div><span class="bar-lbl">3.1</span></div>
+          <div class="form-line"><span class="lbl">Bolivia</span><div class="bar"><i class="red" style="--w:22%"></i></div><span class="bar-lbl">0.7</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="band">
+  <div class="container band-grid">
+    <div class="reveal"><b data-count="548" data-suffix="x">0x</b><span>cote combinée record</span></div>
+    <div class="reveal" style="--d:.08s"><b data-count="12">0</b><span>sélections par coupon</span></div>
+    <div class="reveal" style="--d:.16s"><b data-count="1250" data-suffix="+">0</b><span>matchs analysés par an</span></div>
+    <div class="reveal" style="--d:.24s"><b>24/7</b><span>veille de l'IA</span></div>
+  </div>
+</div>
+
+<section class="sec" id="gains">
+  <div class="container">
+    <div class="reveal">
+      <span class="kicker">Temps forts</span>
+      <h2>Derniers coupons <span class="g">gagnants</span>.</h2>
+      <p class="sec-sub">Un extrait des résultats récents publiés sur la chaîne. Les gains passés ne préjugent pas des gains futurs.</p>
+    </div>
+    <div class="wins-grid">
+      <article class="win reveal"><span class="win-stamp">Validé IA</span>
+        <div class="win-top"><span>Coupon #AI-4583</span><span class="win-badge"><svg class="icon" style="width:12px;height:12px"><use href="#i-trophy"/></svg>GAGNÉ</span></div>
+        <div class="win-odd">548<small>x</small></div>
+        <div class="win-meta"><svg class="icon"><use href="#i-bolt"/></svg>High Odds — 12 sélections</div>
+      </article>
+      <article class="win reveal" style="--d:.1s"><span class="win-stamp">Validé IA</span>
+        <div class="win-top"><span>Coupon #AI-4579</span><span class="win-badge"><svg class="icon" style="width:12px;height:12px"><use href="#i-trophy"/></svg>GAGNÉ</span></div>
+        <div class="win-odd">9.7<small>x</small></div>
+        <div class="win-meta"><svg class="icon"><use href="#i-flask"/></svg>Lab IA — 5 sélections</div>
+      </article>
+      <article class="win reveal" style="--d:.2s"><span class="win-stamp">Validé IA</span>
+        <div class="win-top"><span>Coupon #AI-4568</span><span class="win-badge"><svg class="icon" style="width:12px;height:12px"><use href="#i-trophy"/></svg>GAGNÉ</span></div>
+        <div class="win-odd">212<small>x</small></div>
+        <div class="win-meta"><svg class="icon"><use href="#i-bolt"/></svg>High Odds — 12 sélections</div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="galerie">
+  <div class="container">
+    <div class="gal-head reveal">
+      <div>
+        <span class="kicker">Historique complet</span>
+        <h2>Galerie des coupons passés.</h2>
+        <p class="sec-sub">Transparence totale : consultez l'historique des coupons publiés, gagnés ou perdus.</p>
+      </div>
+      <span class="gal-count"><svg class="icon" style="width:16px;height:16px;color:var(--green)"><use href="#i-trophy"/></svg>9 coupons récents : <b>6 gagnés</b> · 2 perdus · 1 en cours</span>
+    </div>
+
+    <div class="filters reveal">
+      <button class="filter-btn active" data-filter="all">Tous</button>
+      <button class="filter-btn" data-filter="win">Gagnés</button>
+      <button class="filter-btn" data-filter="high">High Odds</button>
+      <button class="filter-btn" data-filter="safe">Sécurisé</button>
+      <button class="filter-btn" data-filter="lab">Lab IA</button>
+    </div>
+
+    <div class="gal-grid reveal">
+      <article class="gal-card" data-type="high" data-status="win"><div class="gal-top"><b>#AI-4583</b><span>28 sept. 2026</span></div><div class="gal-odd">548x</div><span class="gal-type high">HIGH ODDS</span><span class="gal-stamp win">GAGNÉ</span><div class="gal-sel">12 sélections</div><div class="gal-bar"></div></article>
+      <article class="gal-card" data-type="safe" data-status="win"><div class="gal-top"><b>#AI-4581</b><span>27 sept. 2026</span></div><div class="gal-odd">2.4x</div><span class="gal-type safe">SÉCURISÉ</span><span class="gal-stamp win">GAGNÉ</span><div class="gal-sel">3 sélections</div><div class="gal-bar"></div></article>
+      <article class="gal-card" data-type="lab" data-status="win"><div class="gal-top"><b>#AI-4579</b><span>26 sept. 2026</span></div><div class="gal-odd">9.7x</div><span class="gal-type lab">LAB IA</span><span class="gal-stamp win">GAGNÉ</span><div class="gal-sel">5 sélections</div><div class="gal-bar"></div></article>
+      <article class="gal-card" data-type="high" data-status="loss"><div class="gal-top"><b>#AI-4576</b><span>25 sept. 2026</span></div><div class="gal-odd">132x</div><span class="gal-type high">HIGH ODDS</span><span class="gal-stamp loss">PERDU</span><div class="gal-sel">10 sélections</div><div class="gal-bar"></div></article>
+      <article class="gal-card" data-type="safe" data-status="win"><div class="gal-top"><b>#AI-4574</b><span>24 sept. 2026</span></div><div class="gal-odd">1.9x</div><span class="gal-type safe">SÉCURISÉ</span><span class="gal-stamp win">GAGNÉ</span><div class="gal-sel">2 sélections</div><div class="gal-bar"></div></article>
+      <article class="gal-card" data-type="lab" data-status="win"><div class="gal-top"><b>#AI-4571</b><span>23 sept. 2026</span></div><div class="gal-odd">14.2x</div><span class="gal-type lab">LAB IA</span><span class="gal-stamp win">GAGNÉ</span><div class="gal-sel">6 sélections</div><div class="gal-bar"></div></article>
+      <article class="gal-card" data-type="high" data-status="win"><div class="gal-top"><b>#AI-4568</b><span>22 sept. 2026</span></div><div class="gal-odd">212x</div><span class="gal-type high">HIGH ODDS</span><span class="gal-stamp win">GAGNÉ</span><div class="gal-sel">12 sélections</div><div class="gal-bar"></div></article>
+      <article class="gal-card" data-type="safe" data-status="run"><div class="gal-top"><b>#AI-4565</b><span>21 sept. 2026</span></div><div class="gal-odd">3.1x</div><span class="gal-type safe">SÉCURISÉ</span><span class="gal-stamp run">EN COURS</span><div class="gal-sel">4 sélections</div><div class="gal-bar"></div></article>
+      <article class="gal-card" data-type="lab" data-status="loss"><div class="gal-top"><b>#AI-4562</b><span>20 sept. 2026</span></div><div class="gal-odd">7.8x</div><span class="gal-type lab">LAB IA</span><span class="gal-stamp loss">PERDU</span><div class="gal-sel">5 sélections</div><div class="gal-bar"></div></article>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="types">
+  <div class="container">
+    <div class="reveal">
+      <span class="kicker">Types de coupons</span>
+      <h2>Choisissez votre profil de risque.</h2>
+    </div>
+    <div class="types-grid">
+      <article class="type reveal"><span class="emo"><svg class="icon"><use href="#i-shield"/></svg></span><h3>Sécurisé</h3><p>2-3 sélections solides pour faire grossir le capital pas à pas. Idéal pour les parieurs prudents.</p><span class="odds">Cotes : <b>1.60 – 2.50</b></span><div class="risk-meter"><i class="on"></i><i></i><i></i><span>Risque faible</span></div></article>
+      <article class="type hot reveal" style="--d:.08s"><span class="emo"><svg class="icon"><use href="#i-bolt"/></svg></span><h3>High Odds</h3><p>Jusqu'à 12 sélections analysées une par une pour viser de très gros gains avec une petite mise.</p><span class="odds">Cotes : <b>10x – 548x</b></span><div class="risk-meter"><i class="on red"></i><i class="on red"></i><i class="on red"></i><span>Risque élevé</span></div></article>
+      <article class="type reveal" style="--d:.16s"><span class="emo"><svg class="icon"><use href="#i-flask"/></svg></span><h3>Expérimentation IA</h3><p>Le laboratoire du modèle : nouveaux marchés et stratégies en conditions réelles.</p><span class="odds">Cotes : <b>variables</b></span><div class="risk-meter"><i class="on"></i><i class="on"></i><i></i><span>Risque moyen</span></div></article>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="avis">
+  <div class="container">
+    <div class="reveal">
+      <span class="kicker">Avis de la communauté</span>
+      <h2>Ils parient <span class="g">avec l'IA</span>.</h2>
+    </div>
+  </div>
+  <div class="rev-rows reveal">
+    <div class="rev-row">
+      <div class="track">
+        <div class="rev-card"><div class="stars"><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg></div><p>« Le coupon high odds du mois est passé à 212x. L'analyse IA est d'un autre niveau. »</p><div class="rev-who"><span class="rev-ava">YK</span><div><b>Yannick K.</b><span>Membre vérifié <svg class="icon"><use href="#i-check"/></svg></span></div></div></div>
+        <div class="rev-card"><div class="stars"><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg></div><p>« Enfin des stats claires : forme, H2H, xG… tout est détaillé avant de parier. »</p><div class="rev-who"><span class="rev-ava">SM</span><div><b>Sarah M.</b><span>Membre vérifié <svg class="icon"><use href="#i-check"/></svg></span></div></div></div>
+        <div class="rev-card"><div class="stars"><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg></div><p>« La chaîne WhatsApp est ultra réactive, coupons publiés tôt chaque matin. »</p><div class="rev-who"><span class="rev-ava">MD</span><div><b>Moussa D.</b><span>Membre vérifié <svg class="icon"><use href="#i-check"/></svg></span></div></div></div>
+        <div class="rev-card"><div class="stars"><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon off"><use href="#i-star"/></svg></div><p>« Les coupons sécurisés sont parfaits pour gérer mon bankroll sérieusement. »</p><div class="rev-who"><span class="rev-ava">KR</span><div><b>Kevin R.</b><span>Membre vérifié <svg class="icon"><use href="#i-check"/></svg></span></div></div></div>
+        <div class="rev-card"><div class="stars"><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg></div><p>« Le coupon high odds du mois est passé à 212x. L'analyse IA est d'un autre niveau. »</p><div class="rev-who"><span class="rev-ava">YK</span><div><b>Yannick K.</b><span>Membre vérifié <svg class="icon"><use href="#i-check"/></svg></span></div></div></div>
+        <div class="rev-card"><div class="stars"><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg></div><p>« Enfin des stats claires : forme, H2H, xG… tout est détaillé avant de parier. »</p><div class="rev-who"><span class="rev-ava">SM</span><div><b>Sarah M.</b><span>Membre vérifié <svg class="icon"><use href="#i-check"/></svg></span></div></div></div>
+        <div class="rev-card"><div class="stars"><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg></div><p>« La chaîne WhatsApp est ultra réactive, coupons publiés tôt chaque matin. »</p><div class="rev-who"><span class="rev-ava">MD</span><div><b>Moussa D.</b><span>Membre vérifié <svg class="icon"><use href="#i-check"/></svg></span></div></div></div>
+        <div class="rev-card"><div class="stars"><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon off"><use href="#i-star"/></svg></div><p>« Les coupons sécurisés sont parfaits pour gérer mon bankroll sérieusement. »</p><div class="rev-who"><span class="rev-ava">KR</span><div><b>Kevin R.</b><span>Membre vérifié <svg class="icon"><use href="#i-check"/></svg></span></div></div></div>
+      </div>
+    </div>
+    <div class="rev-row rev">
+      <div class="track">
+        <div class="rev-card"><div class="stars"><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg></div><p>« L'expérimentation IA m'a bluffé : 4 coupons lab gagnants sur 5 ce mois-ci. »</p><div class="rev-who"><span class="rev-ava">AT</span><div><b>Awa T.</b><span>Membre vérifié <svg class="icon"><use href="#i-check"/></svg></span></div></div></div>
+        <div class="rev-card"><div class="stars"><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg></div><p>« Précision, discipline, transparence… je recommande à 100 %. »</p><div class="rev-who"><span class="rev-ava">TL</span><div><b>Théo L.</b><span>Membre vérifié <svg class="icon"><use href="#i-check"/></svg></span></div></div></div>
+        <div class="rev-card"><div class="stars"><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg></div><p>« 12 sélections analysées une par une, du jamais vu ailleurs. »</p><div class="rev-who"><span class="rev-ava">DP</span><div><b>Diego P.</b><span>Membre vérifié <svg class="icon"><use href="#i-check"/></svg></span></div></div></div>
+        <div class="rev-card"><div class="stars"><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon off"><use href="#i-star"/></svg></div><p>« Le meilleur combo data + foot que j'ai trouvé. Simple et efficace. »</p><div class="rev-who"><span class="rev-ava">NB</span><div><b>Nadia B.</b><span>Membre vérifié <svg class="icon"><use href="#i-check"/></svg></span></div></div></div>
+        <div class="rev-card"><div class="stars"><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg></div><p>« L'expérimentation IA m'a bluffé : 4 coupons lab gagnants sur 5 ce mois-ci. »</p><div class="rev-who"><span class="rev-ava">AT</span><div><b>Awa T.</b><span>Membre vérifié <svg class="icon"><use href="#i-check"/></svg></span></div></div></div>
+        <div class="rev-card"><div class="stars"><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg></div><p>« Précision, discipline, transparence… je recommande à 100 %. »</p><div class="rev-who"><span class="rev-ava">TL</span><div><b>Théo L.</b><span>Membre vérifié <svg class="icon"><use href="#i-check"/></svg></span></div></div></div>
+        <div class="rev-card"><div class="stars"><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg></div><p>« 12 sélections analysées une par une, du jamais vu ailleurs. »</p><div class="rev-who"><span class="rev-ava">DP</span><div><b>Diego P.</b><span>Membre vérifié <svg class="icon"><use href="#i-check"/></svg></span></div></div></div>
+        <div class="rev-card"><div class="stars"><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon off"><use href="#i-star"/></svg></div><p>« Le meilleur combo data + foot que j'ai trouvé. Simple et efficace. »</p><div class="rev-who"><span class="rev-ava">NB</span><div><b>Nadia B.</b><span>Membre vérifié <svg class="icon"><use href="#i-check"/></svg></span></div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="programme">
+  <div class="container">
+    <div class="reveal">
+      <span class="kicker">Programme</span>
+      <h2>Les prochains matchs analysés.</h2>
+    </div>
+    <div class="prog reveal">
+      <div class="prog-row"><div class="date"><b>SAM</b><span>20:45</span></div><div class="prog-match"><b>Argentina vs Bolivia</b><span>Éliminatoires Coupe du Monde</span></div><span class="badge in">Dans le coupon</span></div>
+      <div class="prog-row"><div class="date"><b>SAM</b><span>23:00</span></div><div class="prog-match"><b>USA vs Chile</b><span>Amical international</span></div><span class="badge in">Dans le coupon</span></div>
+      <div class="prog-row"><div class="date"><b>DIM</b><span>02:00</span></div><div class="prog-match"><b>Mexico vs Peru</b><span>Amical international</span></div><span class="badge in">Dans le coupon</span></div>
+      <div class="prog-row"><div class="date"><b>DIM</b><span>18:00</span></div><div class="prog-match"><b>Portugal U21 vs Gibraltar U21</b><span>Euro Espoirs — Qualifications</span></div><span class="badge in">Dans le coupon</span></div>
+      <div class="prog-row"><div class="date"><b>DIM</b><span>21:00</span></div><div class="prog-match"><b>Real Madrid vs FC Barcelona</b><span>La Liga — El Clásico</span></div><span class="badge soon">Analyse à venir</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="faq">
+  <div class="container">
+    <div class="reveal" style="text-align:center">
+      <span class="kicker" style="justify-content:center">FAQ</span>
+      <h2>Questions fréquentes.</h2>
+    </div>
+    <div class="faq reveal">
+      <details><summary>Comment sont générés les pronostics ?<span class="plus"><svg class="icon"><use href="#i-plus"/></svg></span></summary><p class="ans">Notre IA croise des milliers de données (forme récente, H2H, buts, enjeux, effectifs…) pour calculer des probabilités et détecter les meilleurs marchés. Chaque coupon est ensuite validé avec un score de confiance.</p></details>
+      <details><summary>Les coupons sont-ils garantis gagnants ?<span class="plus"><svg class="icon"><use href="#i-plus"/></svg></span></summary><p class="ans">Non. Aucun pronostic n'est garanti. L'IA maximise vos probabilités sur le long terme, mais le sport reste incertain. Pariez uniquement ce que vous pouvez vous permettre de perdre.</p></details>
+      <details><summary>Comment recevoir les coupons ?<span class="plus"><svg class="icon"><use href="#i-plus"/></svg></span></summary><p class="ans">En rejoignant gratuitement notre chaîne WhatsApp. Les coupons du jour y sont publiés chaque matin, accompagnés des analyses et du programme des matchs.</p></details>
+      <details><summary>Qu'est-ce qu'un coupon « expérimentation IA » ?<span class="plus"><svg class="icon"><use href="#i-plus"/></svg></span></summary><p class="ans">Un coupon de laboratoire : le modèle y teste de nouveaux marchés et de nouvelles stratégies en conditions réelles, avec des mises virtuelles recommandées plus faibles.</p></details>
+      <details><summary>Que signifie la cote record de 548x ?<span class="plus"><svg class="icon"><use href="#i-plus"/></svg></span></summary><p class="ans">C'est la cote combinée la plus élevée jamais atteinte par un coupon HIGH ODDS de 12 sélections entièrement validé par l'IA.</p></details>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="rejoindre">
+  <div class="container">
+    <div class="cta-card reveal">
+      <span class="kicker" style="justify-content:center">WhatsApp</span>
+      <h2>Prédire. Gagner. <span class="g">Ensemble.</span></h2>
+      <p>Rejoins notre chaîne WhatsApp et accède aux meilleurs coupons IA, chaque jour. « Plus qu'un coupon, une stratégie. »</p>
+      <a href="https://whatsapp.com/channel/0029VbE4mUzCHDynH0pRA02W" target="_blank" rel="noopener" class="btn cta-wa"><svg class="icon"><use href="#i-wa"/></svg>Rejoindre maintenant</a>
+      <div class="cta-note">Gratuit • Sans engagement • 18+</div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="container">
+    <div class="f-top">
+      <div class="f-brand">
+        <a href="#" class="logo"><svg class="brain"><use href="#i-brain"/></svg>AI&nbsp;B<span class="g">E</span>T&nbsp;<span>E-GO</span></a>
+        <div class="f-tag">Plus qu'un coupon, une stratégie.</div>
+        <p>Pronostics sportifs générés et analysés par intelligence artificielle. La data au service de vos paris.</p>
+        <div class="f-social">
+          <a href="https://whatsapp.com/channel/0029VbE4mUzCHDynH0pRA02W" target="_blank" rel="noopener" aria-label="WhatsApp"><svg class="icon"><use href="#i-wa"/></svg></a>
+          <a href="#" aria-label="Telegram"><svg class="icon"><use href="#i-send"/></svg></a>
+          <a href="#" aria-label="Instagram"><svg class="icon"><use href="#i-insta"/></svg></a>
+          <a href="#" aria-label="YouTube"><svg class="icon"><use href="#i-yt"/></svg></a>
+        </div>
+      </div>
+      <div class="f-cols">
+        <div class="f-col">
+          <h4>Navigation</h4>
+          <a href="#fonctionnalites">Fonctionnalités</a>
+          <a href="#coupon">Coupon du jour</a>
+          <a href="#analyse">Analyse IA</a>
+          <a href="#galerie">Galerie</a>
+          <a href="#programme">Programme</a>
+        </div>
+        <div class="f-col">
+          <h4>Communauté</h4>
+          <a href="#avis">Avis membres</a>
+          <a href="#gains">Coupons gagnants</a>
+          <a href="#faq">FAQ</a>
+          <a href="https://whatsapp.com/channel/0029VbE4mUzCHDynH0pRA02W" target="_blank" rel="noopener">Rejoindre WhatsApp</a>
+        </div>
+        <div class="f-col f-news">
+          <h4>Alerte coupon du jour</h4>
+          <p>Recevez le coupon du jour et les analyses IA directement par e-mail.</p>
+          <form id="newsForm">
+            <input type="email" required placeholder="votre@email.com" aria-label="Votre e-mail">
+            <button class="btn sm" type="submit"><svg class="icon" style="width:16px;height:16px"><use href="#i-send"/></svg>OK</button>
+          </form>
+          <span class="f-ok" id="newsOk" hidden><svg class="icon" style="width:15px;height:15px"><use href="#i-check"/></svg>C'est noté ! Premier coupon demain matin.</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="f-gamble">
+      <span class="age">18+</span>
+      <span>Les pronostics sont fournis à titre informatif et ne garantissent aucun gain. Jouer comporte des risques : endettement, isolement, dépendance. Besoin d'aide ? 09 74 75 13 13 (appel non surtaxé).</span>
+    </div>
+
+    <div class="f-bottom">
+      <span>© 2026 AI BET E-GO — Tous droits réservés.</span>
+      <nav><a href="#">Confidentialité</a><a href="#">Conditions</a><a href="#">Mentions légales</a></nav>
+      <span>Conçu avec l'assistance IA</span>
+    </div>
+  </div>
+  <div class="f-giant" aria-hidden="true">AI BET E-GO</div>
+</footer>
+
+<script>
+const WA_URL = "https://whatsapp.com/channel/0029VbE4mUzCHDynH0pRA02W";
+
+const nav = document.getElementById('nav');
+addEventListener('scroll', () => nav.classList.toggle('scrolled', scrollY > 10));
+
+const burger = document.getElementById('burger'), menu = document.getElementById('menu');
+burger.addEventListener('click', () => {
+  const open = menu.classList.toggle('open');
+  burger.classList.toggle('active', open);
+  burger.setAttribute('aria-expanded', open);
+});
+menu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+  menu.classList.remove('open'); burger.classList.remove('active');
+  burger.setAttribute('aria-expanded', false);
+}));
+
+const io = new IntersectionObserver(es => es.forEach(e => {
+  if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); }
+}), { threshold: .12 });
+document.querySelectorAll('.reveal, .reveal-lines').forEach(el => io.observe(el));
+
+const cio = new IntersectionObserver(es => es.forEach(e => {
+  if (!e.isIntersecting) return;
+  const el = e.target, end = +el.dataset.count, dur = 1500, t0 = performance.now();
+  const step = t => {
+    const p = Math.min((t - t0) / dur, 1);
+    el.textContent = Math.round(end * (1 - Math.pow(1 - p, 3))).toLocaleString('fr-FR') + (el.dataset.suffix || '');
+    if (p < 1) requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step); cio.unobserve(el);
+}), { threshold: .5 });
+document.querySelectorAll('[data-count]').forEach(c => cio.observe(c));
+
+document.querySelectorAll('.filter-btn').forEach(btn => btn.addEventListener('click', () => {
+  document.querySelector('.filter-btn.active').classList.remove('active');
+  btn.classList.add('active');
+  const f = btn.dataset.filter;
+  document.querySelectorAll('.gal-card').forEach(c => {
+    const show = f === 'all' || c.dataset.type === f || c.dataset.status === f;
+    c.classList.toggle('hide', !show);
+    if (show) { c.classList.remove('show'); void c.offsetWidth; c.classList.add('show'); }
+  });
+}));
+
+const nf = document.getElementById('newsForm');
+nf.addEventListener('submit', e => {
+  e.preventDefault();
+  nf.hidden = true;
+  document.getElementById('newsOk').hidden = false;
+});
+</script>
+</body>
+</html>
